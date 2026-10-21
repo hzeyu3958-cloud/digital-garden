@@ -1,0 +1,2 @@
+把照片命名为 profile.jpg 放在这个目录（完整路径：client/public/images/profile.jpg），刷新页面即可生效。
+建议：正方形、边长 800px 以上、小于 300KB，人脸居中。
