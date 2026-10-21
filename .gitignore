@@ -107,3 +107,8 @@ temp/
 
 # Webdev artifacts (checkpoint zips, migrations, etc.)
 .webdev/
+
+# API 推送辅助脚本（本机 github.com 直连不通时用，不进版本库）
+push_api.ps1
+push_cache.json
+push_log.txt
