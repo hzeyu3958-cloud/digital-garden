@@ -18,7 +18,12 @@ interface Particle {
   gold: boolean;
 }
 
-export default function GardenParticles() {
+export default function GardenParticles({
+  className = "pointer-events-none fixed inset-0 z-0 h-full w-full",
+}: {
+  /** 整站常驻用 fixed；放进分区里用 absolute */
+  className?: string;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -107,7 +112,7 @@ export default function GardenParticles() {
   return (
     <canvas
       ref={canvasRef}
-      className="pointer-events-none fixed inset-0 z-0 h-full w-full"
+      className={className}
       aria-hidden="true"
     />
   );

@@ -4,6 +4,7 @@
  */
 import { motion } from "framer-motion";
 import { useTilt } from "../hooks/useTilt";
+import { sfx } from "../lib/gardenAudio";
 
 interface AnimatedCardProps {
   index: number;
@@ -31,6 +32,7 @@ export default function AnimatedCard({
         ease: [0.25, 0.46, 0.45, 0.94],
       }}
       whileHover={{ y: -6, transition: { duration: 0.25, ease: "easeOut" } }}
+      onPointerEnter={() => sfx.hover()}
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
       style={{ rotateX, rotateY, transformPerspective: 900 }}

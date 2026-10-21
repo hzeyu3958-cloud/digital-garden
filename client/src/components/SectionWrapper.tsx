@@ -4,7 +4,7 @@
  */
 import { motion } from "framer-motion";
 import { useInView } from "../hooks/useInView";
-import SplitText from "./SplitText";
+import SplitHeading from "./SplitHeading";
 
 interface SectionWrapperProps {
   id: string;
@@ -58,19 +58,13 @@ export default function SectionWrapper({
             />
           </div>
 
-          <h2
-            className="text-3xl lg:text-4xl xl:text-5xl text-ink leading-tight"
+          <SplitHeading
+            text={title}
+            active={inView}
+            delay={0.15}
+            className="text-3xl leading-[1.1] text-ink lg:text-4xl xl:text-5xl"
             style={{ fontFamily: "var(--font-display)" }}
-          >
-            {/* 逐字 3D 翻入：对齐原站 #identity 标题 */}
-            <SplitText
-              text={title}
-              gradient
-              active={inView}
-              delay={0.15}
-              charDelay={0.045}
-            />
-          </h2>
+          />
 
           {subtitle && (
             <motion.p

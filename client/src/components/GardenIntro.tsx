@@ -1,34 +1,59 @@
 /*
- * GardenIntro: 开场进入门
- * 对齐 danica-garden 的第一印象：深墨绿全屏 + 加载进度 + Enter Digital Garden
- * 进入后幕布上下分开，并记住本次会话（sessionStorage）
+ * GardenIntro: 开场电影门（对齐参考站第一帧）
+ *   满屏会动的花园场景 + 左上双语标识 + CRT 屏幕上逐字打出欢迎语 +
+ *   底部 Enter Digital Garden / 进入数字花园 + 跳过 intro
+ *   进入时镜头「推进」穿过画面，而不是拉幕布
+ * 音效：进度滴答 → 就绪琶音 → 进门风声与和弦
  */
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Leaf } from "lucide-react";
+import { ArrowRight, SkipForward, Volume2 } from "lucide-react";
 import Typewriter from "./Typewriter";
+import LivingScene from "./LivingScene";
+import SplitHeading from "./SplitHeading";
 import { site } from "../content/site";
+import { sfx } from "../lib/gardenAudio";
 
-interface GardenIntroProps {
-  onEnter: () => void;
-}
-
-const INK = "oklch(0.185 0.035 160)";
+const INK = "oklch(0.285 0.035 158)";
 const PARCHMENT = "oklch(0.975 0.008 85)";
 const GOLD = "oklch(0.700 0.130 85)";
 const LOAD_MS = 2100;
-const AUTO_ENTER_MS = 9000;
+const AUTO_ENTER_MS = 12000;
 
-export default function GardenIntro({ onEnter }: GardenIntroProps) {
+/** CRT 屏幕在图里的位置（按生成图实测的百分比），文字要贴在这块玻璃上 */
+const SCREEN = {
+  left: "31.7%",
+  top: "36.6%",
+  width: "16.1%",
+  height: "27%",
+};
+
+export default function GardenIntro({ onEnter }: { onEnter: () => void }) {
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
   const [leaving, setLeaving] = useState(false);
+  const [armed, setArmed] = useState(false);
+
+  /* 首次点击/按键解锁 AudioContext（浏览器策略） */
+  useEffect(() => {
+    const arm = () => {
+      sfx.unlock();
+      setArmed(true);
+    };
+    window.addEventListener("pointerdown", arm, { once: true });
+    window.addEventListener("keydown", arm, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", arm);
+      window.removeEventListener("keydown", arm);
+    };
+  }, []);
 
   /* 加载进度：2.1s 缓出到 100% */
   useEffect(() => {
     const start = performance.now();
     let raf = 0;
     let shown = -1;
+    let decade = -1;
 
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / LOAD_MS);
@@ -37,10 +62,16 @@ export default function GardenIntro({ onEnter }: GardenIntroProps) {
         shown = value;
         setProgress(value);
       }
+      const d = Math.floor(value / 12);
+      if (d !== decade) {
+        decade = d;
+        sfx.tick();
+      }
       if (t < 1) {
         raf = requestAnimationFrame(tick);
       } else {
         setReady(true);
+        sfx.chime();
       }
     };
 
@@ -58,19 +89,25 @@ export default function GardenIntro({ onEnter }: GardenIntroProps) {
     };
   }, []);
 
-  const enter = useCallback(() => {
-    if (!ready || leaving) return;
-    setLeaving(true);
-    try {
-      sessionStorage.setItem("garden-entered", "1");
-    } catch {
-      /* 隐私模式下忽略 */
-    }
-    /* 幕布 0.3s 延迟 + 0.95s 滑完，等它彻底分开再卸载 */
-    window.setTimeout(onEnter, 1300);
-  }, [ready, leaving, onEnter]);
+  const enter = useCallback(
+    (skipped = false) => {
+      if (leaving || (!ready && !skipped)) return;
+      setLeaving(true);
+      sfx.unlock();
+      sfx.whoosh();
+      window.setTimeout(() => sfx.enter(), 200);
+      try {
+        sessionStorage.setItem("garden-entered", "1");
+      } catch {
+        /* 隐私模式下忽略 */
+      }
+      /* 推进镜头 1.15s，走完再卸载 */
+      window.setTimeout(onEnter, skipped ? 780 : 1200);
+    },
+    [ready, leaving, onEnter]
+  );
 
-  /* 就绪后按回车/空格也能进；久等自动进 */
+  /* 就绪后回车/空格也能进；久等自动进 */
   useEffect(() => {
     if (!ready || leaving) return;
 
@@ -81,7 +118,7 @@ export default function GardenIntro({ onEnter }: GardenIntroProps) {
       }
     };
     window.addEventListener("keydown", onKey);
-    const auto = window.setTimeout(enter, AUTO_ENTER_MS);
+    const auto = window.setTimeout(() => enter(true), AUTO_ENTER_MS);
 
     return () => {
       window.removeEventListener("keydown", onKey);
@@ -90,130 +127,174 @@ export default function GardenIntro({ onEnter }: GardenIntroProps) {
   }, [ready, leaving, enter]);
 
   return (
-    <div className="fixed inset-0 z-[100]" role="dialog" aria-label="进入数字花园">
-      {/* 幕布：上下两扇门 */}
-      <motion.div
-        className="absolute inset-x-0 top-0 h-[50.5%]"
-        style={{ backgroundColor: INK }}
-        animate={leaving ? { y: "-101%" } : { y: 0 }}
-        transition={{ duration: 0.95, delay: leaving ? 0.3 : 0, ease: [0.76, 0, 0.24, 1] }}
-      />
-      <motion.div
-        className="absolute inset-x-0 bottom-0 h-[50.5%]"
-        style={{ backgroundColor: INK }}
-        animate={leaving ? { y: "101%" } : { y: 0 }}
-        transition={{ duration: 0.95, delay: leaving ? 0.3 : 0, ease: [0.76, 0, 0.24, 1] }}
+    <motion.div
+      className="fixed inset-0 z-[100] overflow-hidden"
+      role="dialog"
+      aria-label="进入数字花园"
+      initial={{ opacity: 1 }}
+      animate={
+        leaving
+          ? { opacity: 0, scale: 1.28, filter: "blur(16px)" }
+          : { opacity: 1, scale: 1, filter: "blur(0px)" }
+      }
+      transition={{
+        duration: leaving ? 1.15 : 0.5,
+        ease: [0.66, 0, 0.24, 1],
+      }}
+    >
+      {/* ---------- 会动的花园 ---------- */}
+      <LivingScene
+        src={site.profile.introCover}
+        videoSrc={site.profile.introVideo || undefined}
+        grainId="grain-intro"
+        position="center 62%"
+        panY={0.62}
+        bloomAt={{ x: "39.8%", y: "50%", size: "26%" }}
+        shimmerAt={{ left: "0%", top: "36%", width: "24%", height: "14%" }}
+        butterflies={8}
+        petals={9}
+        sparkles={16}
+        overlay="linear-gradient(180deg, oklch(0.15 0.022 160 / 0.45) 0%, transparent 30%, transparent 62%, oklch(0.13 0.02 158 / 0.72) 100%)"
       />
 
-      {/* 门上的叶影 */}
+      {/* ---------- 左上双语标识 ---------- */}
       <motion.div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        animate={leaving ? { opacity: 0 } : { opacity: 1 }}
-        transition={{ duration: 0.3 }}
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="absolute left-6 top-6 z-20 lg:left-10 lg:top-8"
       >
-        <Leaf
-          className="w-[36rem] h-[36rem]"
-          strokeWidth={0.35}
-          style={{ color: PARCHMENT, opacity: 0.045 }}
+        <p
+          className="text-[10px] uppercase lg:text-[11px]"
+          style={{ color: PARCHMENT, letterSpacing: "0.44em", opacity: 0.82 }}
+        >
+          Digital Garden
+        </p>
+        <SplitHeading
+          as="h1"
+          text="数字花园"
+          active
+          delay={0.35}
+          duration={1.2}
+          className="mt-2 text-2xl lg:text-3xl"
+          style={{ color: PARCHMENT, fontFamily: "var(--font-display)" }}
         />
       </motion.div>
 
-      {/* 内容 */}
+      {/* ---------- 打在 CRT 玻璃上的欢迎语 ---------- */}
       <motion.div
-        className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
-        animate={leaving ? { opacity: 0, y: -14 } : { opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="crt-flicker absolute z-20 flex flex-col items-center justify-center text-center"
+        style={{
+          ...SCREEN,
+          transform: "perspective(760px) rotateY(-9deg)",
+          color: INK,
+          fontFamily: "var(--font-display)",
+          lineHeight: 1.35,
+          fontSize: "clamp(0.58rem, 1.5vw, 1.35rem)",
+          textShadow: "0 0 12px oklch(0.95 0.06 85 / 0.55)",
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: leaving ? 0 : 1 }}
+        transition={{ duration: 0.4 }}
       >
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="text-[10px] sm:text-[11px] uppercase mb-7"
-          style={{
-            color: GOLD,
-            fontFamily: "var(--font-accent)",
-            letterSpacing: "0.5em",
-          }}
-        >
-          Digital Garden
-        </motion.p>
+        <span className="block">
+          <Typewriter
+            text="Welcome to"
+            active={ready}
+            initialDelay={260}
+            speed={110}
+            sound
+          />
+        </span>
+        <span className="block">
+          <Typewriter
+            text={`${site.profile.name}的世界`}
+            active={ready}
+            initialDelay={1200}
+            speed={130}
+            sound
+          />
+        </span>
+      </motion.div>
 
-        <h2
-          className="text-3xl sm:text-4xl lg:text-5xl leading-tight mb-3"
-          style={{ color: PARCHMENT, fontFamily: "var(--font-display)" }}
+      {/* ---------- 底部：进度 + 进入 + 跳过 ---------- */}
+      <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col items-center gap-4 pb-7 lg:pb-9">
+        {/* 进度条：加载时才有 */}
+        <motion.div
+          className="flex w-[min(22rem,72vw)] flex-col gap-2"
+          animate={{ opacity: ready ? 0 : 1, height: ready ? 0 : "auto" }}
+          transition={{ duration: 0.4 }}
         >
-          <Typewriter text="花园加载中" speed={210} initialDelay={260} showCursor={false} />
-        </h2>
-
-        <p
-          className="text-xs sm:text-sm italic mb-12"
-          style={{ color: `${PARCHMENT}`, opacity: 0.42, fontFamily: "var(--font-accent)" }}
-        >
-          Preparing {site.meta.siteName}
-        </p>
-
-        {/* 进度线 */}
-        <div className="w-full max-w-[22rem] sm:max-w-sm">
-          <div className="relative h-px w-full" style={{ backgroundColor: "oklch(1 0 0 / 0.12)" }}>
+          <div
+            className="relative h-px w-full"
+            style={{ backgroundColor: "oklch(1 0 0 / 0.22)" }}
+          >
             <div
               className="absolute inset-y-0 left-0"
-              style={{ width: `${progress}%`, backgroundColor: GOLD, transition: "width 80ms linear" }}
+              style={{
+                width: `${progress}%`,
+                backgroundColor: GOLD,
+                transition: "width 80ms linear",
+              }}
             />
           </div>
           <div
-            className="mt-3 flex items-center justify-between text-[10px] uppercase"
-            style={{ color: PARCHMENT, opacity: 0.38, fontFamily: "var(--font-accent)", letterSpacing: "0.28em" }}
+            className="flex items-center justify-between text-[10px] uppercase"
+            style={{ color: PARCHMENT, opacity: 0.55, letterSpacing: "0.3em" }}
           >
             <span>{site.profile.nameEn}</span>
             <span>{String(progress).padStart(3, "0")}%</span>
           </div>
-        </div>
+        </motion.div>
 
-        {/* 进入按钮 */}
-        <div className="mt-14 h-12 flex items-center">
-          {ready ? (
-            <motion.button
-              type="button"
-              onClick={enter}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="group inline-flex items-center gap-3 px-7 py-3 rounded-sm text-sm tracking-wide"
-              style={{
-                backgroundColor: PARCHMENT,
-                color: INK,
-                fontFamily: "var(--font-body)",
-              }}
-            >
-              Enter Digital Garden
-              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </motion.button>
-          ) : (
+        <motion.button
+          type="button"
+          onClick={() => enter()}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: ready ? 1 : 0.45, y: 0 }}
+          transition={{ duration: 0.5 }}
+          whileHover={ready ? { scale: 1.035 } : {}}
+          whileTap={ready ? { scale: 0.97 } : {}}
+          className="group inline-flex items-center gap-3 rounded-full px-7 py-3 text-sm tracking-wide backdrop-blur-md"
+          style={{
+            backgroundColor: "oklch(0.98 0.006 85 / 0.16)",
+            border: `1px solid oklch(1 0 0 / 0.35)`,
+            color: PARCHMENT,
+            boxShadow: "0 14px 40px -18px oklch(0.1 0.02 160 / 0.8)",
+          }}
+        >
+          Enter Digital Garden
+          <span style={{ opacity: 0.7 }}>/</span>
+          <span>进入数字花园</span>
+          <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+        </motion.button>
+
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => enter(true)}
+            className="inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[11px] transition-colors"
+            style={{
+              color: PARCHMENT,
+              opacity: 0.6,
+              backgroundColor: "oklch(0.12 0.02 158 / 0.42)",
+              border: "1px solid oklch(1 0 0 / 0.16)",
+            }}
+          >
+            <SkipForward className="h-3 w-3" />
+            跳过 intro
+          </button>
+          {!armed && (
             <span
-              className="inline-flex items-center gap-3 px-7 py-3 rounded-sm text-sm tracking-wide"
-              style={{
-                color: PARCHMENT,
-                opacity: 0.35,
-                border: `1px solid oklch(1 0 0 / 0.16)`,
-                fontFamily: "var(--font-body)",
-              }}
-              aria-disabled="true"
+              className="inline-flex items-center gap-1.5 text-[11px]"
+              style={{ color: PARCHMENT, opacity: 0.5 }}
             >
-              花园加载中
-              <span className="w-1 h-1 rounded-full animate-pulse" style={{ backgroundColor: GOLD }} />
+              <Volume2 className="h-3 w-3" />
+              点一下开启声音
             </span>
           )}
         </div>
-
-        <p
-          className="mt-6 text-[10px] uppercase"
-          style={{ color: PARCHMENT, opacity: 0.22, fontFamily: "var(--font-accent)", letterSpacing: "0.3em" }}
-        >
-          {ready ? "点击或按 Enter" : "请稍候"}
-        </p>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   );
 }

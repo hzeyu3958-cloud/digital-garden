@@ -46,15 +46,19 @@
   --color-emerald-light: oklch(0.765 0.115 163.225);
   --color-emerald-dark: oklch(0.432 0.120 163.225);
   --color-moss: oklch(0.720 0.080 148);
+  /* 全站金色点缀统一走这个 token：之前只定义了 amber-gold，
+     导致 text-gold / bg-gold 这类根本不存在，金色一直在静默失效 */
+  --color-gold: oklch(0.700 0.130 85);
+  --color-gold-soft: oklch(0.820 0.090 86);
   --color-amber-gold: oklch(0.700 0.130 85);
   --color-parchment: oklch(0.975 0.008 85);
   --color-parchment-warm: oklch(0.960 0.012 80);
   --color-ink: oklch(0.280 0.030 160);
 
-  /* Font families */
-  --font-display: 'DM Serif Display', 'Noto Serif SC', Georgia, serif;
-  --font-body: 'Source Sans 3', 'Noto Sans SC', system-ui, sans-serif;
-  --font-accent: 'Cormorant Garamond', 'Noto Serif SC', Georgia, serif;
+  /* Font families —— 拉丁文自托管，中文走系统字族（不下载几 MB 的 Noto SC） */
+  --font-display: 'DM Serif Display', 'Source Han Serif SC', 'Noto Serif SC', 'Songti SC', 'STSong', Georgia, serif;
+  --font-body: 'Source Sans 3', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-accent: 'Cormorant Garamond', 'Source Han Serif SC', 'Noto Serif SC', Georgia, serif;
 
   /* Custom animations */
   --animate-float: float 6s ease-in-out infinite;
@@ -366,11 +370,185 @@
   }
 }
 
-/* Smooth scrolling */
+/* Smooth scrolling：Lenis 接管后不能同时开原生 smooth，否则两套惯性会抖 */
 html {
-  scroll-behavior: smooth;
   scroll-padding-top: 5rem;
 }
+html:not(.lenis) {
+  scroll-behavior: smooth;
+}
+
+/* 首屏背景的缓慢呼吸（Ken Burns）：没有照片时也不让画面死住 */
+@keyframes ken-burns {
+  0% {
+    transform: scale(1.02) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.09) translate3d(-1.2%, -1%, 0);
+  }
+  100% {
+    transform: scale(1.02) translate3d(0, 0, 0);
+  }
+}
+
+.ken-burns {
+  animation: ken-burns 26s ease-in-out infinite;
+}
+
+/* ============================================================
+   会动的画面层（cinemagraph）
+   一张图拆成两层不同速率漂移→有深度；再叠上蝴蝶、花瓣、
+   光斑、水面波光、胶片颗粒与暗角，观感就是视频而不是壁纸
+   ============================================================ */
+@keyframes scene-back {
+  0%   { transform: scale(1.06) translate3d(0, 0, 0); }
+  50%  { transform: scale(1.13) translate3d(-1.6%, -1.1%, 0); }
+  100% { transform: scale(1.06) translate3d(0, 0, 0); }
+}
+@keyframes scene-front {
+  0%   { transform: scale(1.18) translate3d(1.4%, 1%, 0); }
+  50%  { transform: scale(1.27) translate3d(-1.3%, -0.7%, 0); }
+  100% { transform: scale(1.18) translate3d(1.4%, 1%, 0); }
+}
+.scene-back  { animation: scene-back 46s ease-in-out infinite;  will-change: transform; }
+.scene-front { animation: scene-front 30s ease-in-out infinite; will-change: transform; }
+
+@keyframes bloom-pulse {
+  0%, 100% { opacity: 0.26; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 0.68; transform: translate(-50%, -50%) scale(1.14); }
+}
+.bloom { animation: bloom-pulse 7.5s ease-in-out infinite; }
+
+@keyframes shimmer-slide {
+  0%   { background-position: 0 0;        opacity: 0.13; }
+  50%  { background-position: 190px -26px; opacity: 0.38; }
+  100% { background-position: 0 0;        opacity: 0.13; }
+}
+.water-shimmer {
+  background-image: repeating-linear-gradient(
+    100deg,
+    transparent 0 13px,
+    rgba(255, 255, 255, 0.6) 13px 15px
+  );
+  animation: shimmer-slide 11s ease-in-out infinite;
+}
+
+/* 蝴蝶：四条不同的飞行路线，错开使用就不会同步 */
+@keyframes fly-a {
+  0%   { transform: translate3d(-12vw, 22vh, 0) rotate(8deg);   opacity: 0; }
+  7%   { opacity: 1; }
+  24%  { transform: translate3d(14vw, -6vh, 0) rotate(-12deg); }
+  42%  { transform: translate3d(31vw, 18vh, 0) rotate(10deg); }
+  60%  { transform: translate3d(49vw, -2vh, 0) rotate(-9deg); }
+  78%  { transform: translate3d(67vw, 15vh, 0) rotate(9deg); }
+  93%  { opacity: 1; }
+  100% { transform: translate3d(90vw, 3vh, 0) rotate(-6deg);    opacity: 0; }
+}
+@keyframes fly-b {
+  0%   { transform: translate3d(96vw, 8vh, 0) rotate(-7deg) scaleX(-1);  opacity: 0; }
+  9%   { opacity: 1; }
+  28%  { transform: translate3d(72vw, 26vh, 0) rotate(9deg) scaleX(-1); }
+  47%  { transform: translate3d(50vw, 4vh, 0) rotate(-11deg) scaleX(-1); }
+  66%  { transform: translate3d(28vw, 22vh, 0) rotate(7deg) scaleX(-1); }
+  85%  { transform: translate3d(9vw, 6vh, 0) rotate(-8deg) scaleX(-1); }
+  94%  { opacity: 1; }
+  100% { transform: translate3d(-10vw, 18vh, 0) rotate(6deg) scaleX(-1); opacity: 0; }
+}
+@keyframes fly-c {
+  0%   { transform: translate3d(18vw, 62vh, 0) rotate(-4deg);  opacity: 0; }
+  12%  { opacity: 0.95; }
+  35%  { transform: translate3d(26vw, 30vh, 0) rotate(12deg); }
+  58%  { transform: translate3d(16vw, 12vh, 0) rotate(-10deg); }
+  80%  { transform: translate3d(30vw, 38vh, 0) rotate(8deg); }
+  95%  { opacity: 0.9; }
+  100% { transform: translate3d(22vw, 66vh, 0) rotate(-6deg);  opacity: 0; }
+}
+@keyframes fly-d {
+  0%   { transform: translate3d(64vw, 58vh, 0) rotate(6deg);   opacity: 0; }
+  14%  { opacity: 1; }
+  38%  { transform: translate3d(74vw, 28vh, 0) rotate(-12deg); }
+  62%  { transform: translate3d(58vw, 16vh, 0) rotate(9deg); }
+  86%  { transform: translate3d(78vw, 44vh, 0) rotate(-7deg); }
+  96%  { opacity: 0.85; }
+  100% { transform: translate3d(66vw, 60vh, 0) rotate(5deg);   opacity: 0; }
+}
+@keyframes flap {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0.16); }
+}
+.butterfly-wing {
+  transform-origin: 16px 13px;
+  animation: flap 0.26s ease-in-out infinite alternate;
+}
+
+@keyframes petal-fall {
+  0%   { transform: translate3d(0, -16vh, 0); opacity: 0; }
+  9%   { opacity: 0.95; }
+  90%  { opacity: 0.7; }
+  100% { transform: translate3d(0, 118vh, 0); opacity: 0; }
+}
+@keyframes petal-sway {
+  0%, 100% { margin-left: -22px; }
+  50%      { margin-left: 22px; }
+}
+@keyframes petal-spin {
+  0%   { transform: rotate(0deg) rotateY(0deg); }
+  100% { transform: rotate(340deg) rotateY(360deg); }
+}
+
+@keyframes sparkle-blink {
+  0%, 100% { opacity: 0.1;  transform: scale(0.5); }
+  50%      { opacity: 0.95; transform: scale(1.35); }
+}
+.sparkle { animation: sparkle-blink 3.4s ease-in-out infinite; }
+
+/* 颗粒每帧跳一下，眼睛会把它读成「在拍」而不是「在放」 */
+@keyframes grain-jump {
+  0%   { transform: translate3d(0, 0, 0); }
+  20%  { transform: translate3d(-3%, 2%, 0); }
+  40%  { transform: translate3d(2%, -3%, 0); }
+  60%  { transform: translate3d(-2%, -2%, 0); }
+  80%  { transform: translate3d(3%, 3%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+.film-grain { animation: grain-jump 0.5s steps(1, end) infinite; }
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+  50%      { transform: translateY(-14px) rotate(var(--r, 0deg)); }
+}
+.float-slow { animation: float-slow 6.5s ease-in-out infinite; }
+
+/* ---------- 档案屏：不靠照片的纯代码场景 ---------- */
+/* 光井：缓慢呼吸的大面积暖光 */
+@keyframes archive-breathe {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1);   opacity: 0.82; }
+  50%      { transform: translate3d(2.5%, -3%, 0) scale(1.09); opacity: 1; }
+}
+.archive-breathe { animation: archive-breathe 14s ease-in-out infinite; }
+
+/* 光柱：从顶部斜射下来的林间光束，左右轻摆 */
+@keyframes archive-rays {
+  0%, 100% { transform: translate3d(-3.5%, 0, 0) skewX(-1.5deg); opacity: 0.55; }
+  50%      { transform: translate3d(3.5%, 0, 0)  skewX(1.5deg);  opacity: 0.9; }
+}
+.archive-rays { animation: archive-rays 11s ease-in-out infinite; }
+
+/* 水面碎光：几条横向亮线错开漂 */
+@keyframes archive-water {
+  0%, 100% { transform: translate3d(0, 0, 0) scaleX(1);    opacity: 0.42; }
+  50%      { transform: translate3d(-2.5%, 2px, 0) scaleX(1.06); opacity: 0.72; }
+}
+.archive-water { animation: archive-water 7s ease-in-out infinite; }
+
+@keyframes crt-flicker {
+  0%, 100% { opacity: 0.92; }
+  47%      { opacity: 1; }
+  49%      { opacity: 0.78; }
+  51%      { opacity: 1; }
+}
+.crt-flicker { animation: crt-flicker 4.2s ease-in-out infinite; }
+
 
 /* === Typewriter cursor === */
 .tw-cursor {

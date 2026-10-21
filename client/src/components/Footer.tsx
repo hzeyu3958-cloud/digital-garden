@@ -8,15 +8,14 @@ import { useInView } from "../hooks/useInView";
 import { site } from "../content/site";
 import { scrollPageToTop } from "./SmoothScroll";
 
+/* 目录：与页面板块一一对应，不再按数据多少动态拼 */
 const catalogue = [
+  { label: "择一匣", href: "#archive" },
+  { label: "身份帖", href: "#identity" },
+  { label: "此刻志", href: "#moments" },
+  { label: "知行录", href: "#experiences" },
+  { label: "关于我", href: "#about" },
   { label: "全部入口", href: "#links" },
-  ...(site.skills.length > 0 ? [{ label: "技能图谱", href: "#skills" }] : []),
-  ...(site.projects.length > 0 ? [{ label: "项目", href: "#projects" }] : []),
-  ...(site.aigc.length > 0 ? [{ label: "作品", href: "#aigc" }] : []),
-  ...(site.plans.length > 0 ? [{ label: "方案", href: "#plans" }] : []),
-  ...(site.news.length > 0 ? [{ label: "写作", href: "#news" }] : []),
-  ...(site.work.length > 0 ? [{ label: "经历", href: "#work" }] : []),
-  ...(site.literary.length > 0 ? [{ label: "文学", href: "#literary" }] : []),
 ];
 
 export default function Footer() {

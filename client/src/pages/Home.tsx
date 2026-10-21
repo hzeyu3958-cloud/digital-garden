@@ -3,24 +3,22 @@
  * Home: Main portfolio page composing all sections
  * Layout: Single-page scroll with animated botanical dividers
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import AnimatedBackground from "../components/AnimatedBackground";
-import GardenParticles from "../components/GardenParticles";
+import ScrollProgress from "../components/ScrollProgress";
 import SmoothScroll from "../components/SmoothScroll";
 import GardenIntro from "../components/GardenIntro";
 import GardenCursorTrail from "../components/GardenCursorTrail";
 import HeroSection from "../components/sections/HeroSection";
+import ArchiveSection from "../components/sections/ArchiveSection";
+import IdentitySection from "../components/sections/IdentitySection";
+import MomentsSection from "../components/sections/MomentsSection";
+import ExperienceSection from "../components/sections/ExperienceSection";
+import AboutSection from "../components/sections/AboutSection";
 import LinksSection from "../components/sections/LinksSection";
-import ProjectsSection from "../components/sections/ProjectsSection";
-import SkillsSection from "../components/sections/SkillsSection";
-import AigcSection from "../components/sections/AigcSection";
-import PlansSection from "../components/sections/PlansSection";
-import NewsSection from "../components/sections/NewsSection";
-import WorkSection from "../components/sections/WorkSection";
-import LiterarySection from "../components/sections/LiterarySection";
 import Footer from "../components/Footer";
-import { site } from "../content/site";
+import { sfx } from "../lib/gardenAudio";
 
 function BotanicalDivider() {
   return (
@@ -50,56 +48,44 @@ export default function Home() {
     }
   });
 
+  /* 进门之后：环境风声与鸟鸣一直垫底 */
+  useEffect(() => {
+    if (!entered) return;
+    sfx.ambient(true);
+    return () => sfx.ambient(false);
+  }, [entered]);
+
+  /* 任何一个链接或按钮按下都给一声轻响，不用逐个组件埋点 */
+  useEffect(() => {
+    const onDown = (e: PointerEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (el?.closest?.("a,button")) sfx.click();
+    };
+    window.addEventListener("pointerdown", onDown, true);
+    return () => window.removeEventListener("pointerdown", onDown, true);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <SmoothScroll />
+      <ScrollProgress />
       <GardenCursorTrail />
       {!entered && <GardenIntro onEnter={() => setEntered(true)} />}
       <AnimatedBackground />
-      <GardenParticles />
       <Navbar />
+
+      {/* 与参考站同序：home → archive → identity → moments → experiences → about → links */}
       <HeroSection active={entered} />
+      <ArchiveSection active={entered} />
+      <BotanicalDivider />
+      <IdentitySection active={entered} />
+      <MomentsSection active={entered} />
+      <ExperienceSection active={entered} />
+      <BotanicalDivider />
+      <AboutSection active={entered} />
       <BotanicalDivider />
       <LinksSection />
 
-      {/* 以下板块只在 site.ts 里填了数据后才会出现 */}
-      {site.skills.length > 0 && <SkillsSection />}
-      {site.projects.length > 0 && (
-        <>
-          <BotanicalDivider />
-          <ProjectsSection />
-        </>
-      )}
-      {site.aigc.length > 0 && (
-        <>
-          <BotanicalDivider />
-          <AigcSection />
-        </>
-      )}
-      {site.plans.length > 0 && (
-        <>
-          <BotanicalDivider />
-          <PlansSection />
-        </>
-      )}
-      {site.news.length > 0 && (
-        <>
-          <BotanicalDivider />
-          <NewsSection />
-        </>
-      )}
-      {site.work.length > 0 && (
-        <>
-          <BotanicalDivider />
-          <WorkSection />
-        </>
-      )}
-      {site.literary.length > 0 && (
-        <>
-          <BotanicalDivider />
-          <LiterarySection />
-        </>
-      )}
       <Footer />
     </div>
   );

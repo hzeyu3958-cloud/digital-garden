@@ -5,27 +5,27 @@
  */
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Leaf } from "lucide-react";
+import { Menu, X, Leaf, Volume2, VolumeX } from "lucide-react";
 import { site } from "../content/site";
+import { sfx } from "../lib/gardenAudio";
 import { scrollToSection } from "./SmoothScroll";
 
+/* 双语导航：中文一行、英文小字一行，对齐参考站顶栏 */
 const navLinks = [
-  { label: "首页", href: "#hero" },
-  { label: "全部入口", href: "#links" },
-  ...(site.skills.length > 0 ? [{ label: "技能", href: "#skills" }] : []),
-  ...(site.projects.length > 0 ? [{ label: "项目", href: "#projects" }] : []),
-  ...(site.aigc.length > 0 ? [{ label: "作品", href: "#aigc" }] : []),
-  ...(site.plans.length > 0 ? [{ label: "方案", href: "#plans" }] : []),
-  ...(site.news.length > 0 ? [{ label: "写作", href: "#news" }] : []),
-  ...(site.work.length > 0 ? [{ label: "经历", href: "#work" }] : []),
-  ...(site.literary.length > 0 ? [{ label: "文学", href: "#literary" }] : []),
-  { label: "联系", href: "#contact" },
+  { label: "君初见", sub: "ENCOUNTER", href: "#home" },
+  { label: "择一匣", sub: "ARCHIVE", href: "#archive" },
+  { label: "身份帖", sub: "IDENTITY", href: "#identity" },
+  { label: "此刻志", sub: "MOMENTS", href: "#moments" },
+  { label: "知行录", sub: "FIELD NOTES", href: "#experiences" },
+  { label: "关于我", sub: "ABOUT", href: "#about" },
+  { label: "联系我", sub: "CONTACT", href: "#contact" },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("hero");
+  const [activeSection, setActiveSection] = useState("home");
+  const [muted, setMuted] = useState(() => sfx.muted);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,6 +60,8 @@ export default function Navbar() {
 
   const handleNavClick = (href: string) => {
     setMobileOpen(false);
+    sfx.unlock();
+    sfx.click();
     scrollToSection(href);
   };
 
@@ -78,8 +80,8 @@ export default function Navbar() {
         <div className="container flex items-center justify-between h-16 lg:h-18">
           {/* Logo */}
           <a
-            href="#hero"
-            onClick={(e) => { e.preventDefault(); handleNavClick("#hero"); }}
+            href="#home"
+            onClick={(e) => { e.preventDefault(); handleNavClick("#home"); }}
             className="flex items-center gap-2 group"
           >
             <Leaf className="w-5 h-5 text-emerald transition-transform duration-300 group-hover:rotate-12" />
@@ -100,14 +102,22 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                  className={`relative px-3 py-2 text-sm transition-colors duration-300 ${
+                  className={`relative px-3 py-2 transition-colors duration-300 ${
                     isActive
                       ? "text-emerald-dark font-medium"
                       : "text-ink/60 hover:text-emerald"
                   }`}
                   style={{ fontFamily: "var(--font-body)" }}
                 >
-                  {link.label}
+                  <span className="flex flex-col items-center leading-none">
+                    <span className="text-[13px]">{link.label}</span>
+                    <span
+                      className="mt-1 text-[8px] opacity-60"
+                      style={{ letterSpacing: "0.2em" }}
+                    >
+                      {link.sub}
+                    </span>
+                  </span>
                   {isActive && (
                     <motion.div
                       layoutId="nav-indicator"
@@ -120,14 +130,28 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Mobile toggle */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-2 text-ink/70 hover:text-emerald transition-colors"
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          {/* 音效开关 + 移动端菜单 */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => {
+                sfx.unlock();
+                setMuted(sfx.toggle());
+              }}
+              className="grid h-9 w-9 place-items-center rounded-full border border-ink/15 text-ink/60 transition-colors hover:border-emerald hover:text-emerald"
+              aria-label={muted ? "开启音效" : "关闭音效"}
+              title={muted ? "开启音效" : "关闭音效"}
+            >
+              {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </button>
+
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="lg:hidden p-2 text-ink/70 hover:text-emerald transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
       </motion.nav>
 
@@ -160,7 +184,12 @@ export default function Navbar() {
                   <span className="section-number text-xs opacity-60">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  {link.label}
+                  <span className="flex flex-col leading-tight">
+                    {link.label}
+                    <span className="text-[10px] opacity-55" style={{ letterSpacing: "0.2em" }}>
+                      {link.sub}
+                    </span>
+                  </span>
                 </motion.a>
               ))}
             </div>

@@ -51,12 +51,6 @@ export interface LinkGroup {
   items: LinkItem[];
 }
 
-export interface SkillCategory {
-  category: string;
-  color: string;
-  skills: { name: string; level: number }[];
-}
-
 export interface EducationItem {
   school: string;
   degree: string;
@@ -64,54 +58,41 @@ export interface EducationItem {
   note?: string;
 }
 
-export interface ProjectItem {
-  title: string;
-  desc: string;
-  tags: string[];
-  icon: LucideIcon;
-  accent: string;
-  highlight: string;
+/* ---------- 花园分区（identity / moments / experiences / about） ---------- */
+export interface CapsuleItem {
+  label: string;
+  sub?: string;
 }
 
-export interface AigcItem {
-  title: string;
-  desc: string;
-  type: string;
-  icon: LucideIcon;
-  tool: string;
+export interface MomentItem {
+  /** 想放照片就填路径；留空则渲染纯文字卡（你不想要照片，默认就走这条） */
+  src?: string;
+  caption: string;
+  /** 卡面上的大字短句 */
+  line?: string;
+  /** 小字注脚 */
+  note?: string;
 }
 
-export interface PlanItem {
-  title: string;
-  desc: string;
-  result: string;
-  icon: LucideIcon;
-  year: string;
-}
-
-export interface NewsItem {
-  title: string;
-  publication: string;
-  date: string;
-  type: string;
-  excerpt: string;
-  featured: boolean;
-}
-
-export interface WorkItem {
-  company: string;
-  role: string;
+export interface ExperienceItem {
   period: string;
-  works: { title: string; desc: string }[];
+  role: string;
+  place: string;
+  desc: string;
 }
 
-export interface LiteraryItem {
-  title: string;
-  type: string;
-  publication: string;
-  award: string | null;
-  excerpt: string;
-  featured: boolean;
+export interface ArchiveCard {
+  no: string;
+  cn: string;
+  en: string;
+  desc: string;
+  href: string;
+}
+
+export interface FloatingCard {
+  cn: string;
+  en: string;
+  href: string;
 }
 
 /* ---------- 站点信息 ---------- */
@@ -131,6 +112,17 @@ export const site = {
     email: "you@example.com",
     /** 把照片放到 client/public/images/profile.jpg 即可自动生效 */
     photo: "/images/profile.jpg",
+    /** 首屏背景：换成你自己的场景图，改这一行即可（建议 1680×960 横图） */
+    cover: "/images/garden-hero.jpg",
+    /** 开场电影门的场景图 */
+    introCover: "/images/garden-intro.jpg",
+    /**
+     * 参考站的背景是循环短视频。这两项留空时，组件用「静帧 + 多层动画」模拟运动；
+     * 把你自己的视频放进 client/public/videos/ 后填上路径，会自动切换成真视频，例如
+     * coverVideo: "/videos/hero.mp4"（建议 ≤8s、无音轨、1080p、码率 3Mbps 以下）。
+     */
+    coverVideo: "",
+    introVideo: "",
     intro:
       "法学本科大二，关注民商事争议解决与合规。习惯把复杂材料拆成可检索、可复用的结构，也在用 AI 工具提升检索与写作效率。",
     footerNote: "法学的数字花园，记录阅读、写作与实践的每一步。",
@@ -177,6 +169,120 @@ export const site = {
   cta: {
     primary: { label: "查看全部链接", href: "#links" },
     secondary: { label: "写信给我", href: "mailto:you@example.com" },
+  },
+
+  /* ---------- 以下四个分区与参考站同构 ---------- */
+
+  /** 01 身份：掉落成堆的胶囊标签（参考站为 13 个奖项） */
+  identity: {
+    kicker: "01 / IDENTITY",
+    title: "身份与凭证",
+    lead: "先说我是什么，再说我做过什么。",
+    capsules: [
+      { label: "法学本科", sub: "2024 级·大二" },
+      { label: "南昌", sub: "求职城市" },
+      { label: "律所实习", sub: "目标方向" },
+      { label: "法务助理", sub: "目标方向" },
+      { label: "合规", sub: "目标方向" },
+      { label: "法律检索", sub: "核心技能" },
+      { label: "合同审查", sub: "核心技能" },
+      { label: "法律文书", sub: "核心技能" },
+      { label: "案例梳理", sub: "核心技能" },
+      { label: "AI 工具", sub: "效率加成" },
+      { label: "飞书 / Office", sub: "效率加成" },
+      { label: "英语 CET-6", sub: "分数待填" },
+      { label: "远程协作", sub: "可长期配合" },
+    ] as CapsuleItem[],
+  },
+
+  /** 02 流影：两条相向而行、永不回滚的照片流 */
+  moments: {
+    kicker: "02 / MOMENTS",
+    title: "此刻志",
+    lead: "不摆照片，把正在做的事排成两列：一列向左走，一列向右走。",
+    /** 以下全为示例文案，换成你自己的「此刻」即可，卡面会自动重排 */
+    items: [
+      { caption: "在读", line: "《民法典合同编》", note: "逐条做笔记，整理典型判例" },
+      { caption: "在写", line: "检索报告", note: "把同类案件的要旨拉成一张表" },
+      { caption: "在算", line: "法律检索工具", note: "用 AI 把法条结构化、可检索" },
+      { caption: "在跑", line: "晨跑 5 公里", note: "昌东江畔，六点半" },
+      { caption: "在听", line: "庭审旁听录音", note: "记争议焦点与举证节奏" },
+      { caption: "在读", line: "《控告与叙述》", note: "叙事如何影响事实认定" },
+      { caption: "在做", line: "简历与作品集", note: "把散落的材料归成一个站" },
+      { caption: "在学", line: "英文法律文书", note: "IRAC 结构反复写" },
+    ] as MomentItem[],
+  },
+
+  /** 03 经历：粒子星雾里的时间线 */
+  experiences: {
+    kicker: "03 / EXPERIENCES",
+    title: "经历",
+    lead: "时间线上每一步都要能被人验证。",
+    items: [
+      {
+        period: "2024 — 至今",
+        role: "法学 · 本科在读",
+        place: "你的大学（待填）",
+        desc: "民法、刑法、诉讼法系统训练；主修成绩与奖学金待填。",
+      },
+      {
+        period: "待填",
+        role: "实习 / 项目",
+        place: "律所或法院（待填）",
+        desc: "写清你参与过的案件类型、你负责的那一段、可量化结果。",
+      },
+      {
+        period: "待填",
+        role: "志愿服务 / 社团",
+        place: "法律援助、模拟法庭等",
+        desc: "把服务人次、工时、产出文档数量写成数字。",
+      },
+    ] as ExperienceItem[],
+  },
+
+  /** 04 关于 */
+  about: {
+    kicker: "04 / ABOUT",
+    title: "关于这座花园",
+    paragraphs: [
+      "这个站点把简历、作品、社交入口收在一起：不用截图，不用来回发文件，一个链接说清楚我。",
+      "花园的意思是：只长自己的东西。每一条经历、每一张图都对应得上原始材料，可回访、可核对。",
+      "求职方向：南昌的律所实习、企业法务助理与合规岗；也接受长期远程协作。",
+    ],
+  },
+
+  /** 0 档案入口：立在花园里的磨砂玻璃卡（参考站 “Choose an Archive”） */
+  archives: {
+    title: "Choose an Archive",
+    sub: "选择一个档案入口",
+    cards: [
+      {
+        no: "01",
+        cn: "简历与求职",
+        en: "RESUME & JOB HUNT",
+        desc: "一页简历、可下载 PDF、求职方向与联系方式。",
+        href: "#links",
+      },
+      {
+        no: "02",
+        cn: "内容与写作",
+        en: "CONTENT & WRITING",
+        desc: "读书笔记、案例梳理与法律写作练习。",
+        href: "#links",
+      },
+      {
+        no: "03",
+        cn: "联系与协作",
+        en: "CONTACT & COLLAB",
+        desc: "邮箱、微信与预约沟通，最快找到我的方式。",
+        href: "#contact",
+      },
+    ] as ArchiveCard[],
+    floating: [
+      { cn: "GitHub", en: "CODE", href: "https://github.com/hzeyu3958-cloud/digital-garden" },
+      { cn: "小红书", en: "NOTES", href: "#" },
+      { cn: "公众号", en: "ARTICLES", href: "#" },
+    ] as FloatingCard[],
   },
 
   /** 链接聚合区（Linktree 的替代品） */
@@ -280,42 +386,6 @@ export const site = {
     },
   ] as LinkGroup[],
 
-  /** 技能图谱 */
-  skills: [
-    {
-      category: "法律核心",
-      color: emerald,
-      skills: [
-        { name: "法律检索", level: 88 },
-        { name: "合同审查", level: 80 },
-        { name: "法律文书", level: 85 },
-        { name: "案例梳理", level: 82 },
-        { name: "证据整理", level: 78 },
-      ],
-    },
-    {
-      category: "工具与效率",
-      color: forest,
-      skills: [
-        { name: "Word / WPS", level: 92 },
-        { name: "飞书文档", level: 88 },
-        { name: "PDF 与排版", level: 85 },
-        { name: "Excel 数据整理", level: 80 },
-        { name: "AI 工具（检索 / 写作）", level: 86 },
-      ],
-    },
-    {
-      category: "语言与表达",
-      color: gold,
-      skills: [
-        { name: "中文写作", level: 90 },
-        { name: "英语阅读", level: 78 },
-        { name: "口头表达", level: 76 },
-        { name: "沟通协作", level: 82 },
-      ],
-    },
-  ] as SkillCategory[],
-
   /** 教育背景 */
   education: [
     {
@@ -331,26 +401,6 @@ export const site = {
     { label: "英语", value: "CET-6（分数待填）" },
     { label: "普通话", value: "二级甲等（待填）" },
   ],
-
-  /* ---------- 以下板块默认为空，填了内容才会出现在页面上 ---------- */
-
-  /** 项目与比赛：填 1 条以上，“项目”板块就会自动出现 */
-  projects: [] as ProjectItem[],
-
-  /** AI / 工具类作品 */
-  aigc: [] as AigcItem[],
-
-  /** 策划与方案 */
-  plans: [] as PlanItem[],
-
-  /** 内容与写作 */
-  news: [] as NewsItem[],
-
-  /** 工作与实习 */
-  work: [] as WorkItem[],
-
-  /** 文学作品 */
-  literary: [] as LiteraryItem[],
 };
 
 export type Site = typeof site;

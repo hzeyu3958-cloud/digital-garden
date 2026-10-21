@@ -4,6 +4,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import { sfx } from "../lib/gardenAudio";
 
 interface TypewriterProps {
   text: string;
@@ -14,6 +15,8 @@ interface TypewriterProps {
   showCursor?: boolean;
   /** 为 false 时停在空白，等外部放行（如开场门关闭后） */
   active?: boolean;
+  /** 逐字咔嗒声，默认开 */
+  sound?: boolean;
   onDone?: () => void;
 }
 
@@ -25,12 +28,15 @@ export default function Typewriter({
   style,
   showCursor = true,
   active = true,
+  sound = true,
   onDone,
 }: TypewriterProps) {
   const [count, setCount] = useState(0);
   const doneRef = useRef(false);
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
+  const soundRef = useRef(sound);
+  soundRef.current = sound;
 
   useEffect(() => {
     setCount(0);
@@ -44,6 +50,8 @@ export default function Typewriter({
     const tick = () => {
       i += 1;
       setCount(i);
+      /* 跳过空白字符，不然句子会变成机关枪 */
+      if (soundRef.current && text[i - 1] !== " ") sfx.keystroke();
       if (i >= text.length) {
         if (!doneRef.current) {
           doneRef.current = true;
