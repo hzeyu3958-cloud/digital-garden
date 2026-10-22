@@ -37,8 +37,8 @@ export default function AnimatedCard({
       onPointerLeave={onPointerLeave}
       style={{ rotateX, rotateY, transformPerspective: 900 }}
       className={`group relative bg-card border border-border/60 rounded-sm overflow-hidden
-        shadow-[0_2px_8px_oklch(0.596_0.145_163.225/0.04)]
-        hover:shadow-[0_12px_32px_oklch(0.596_0.145_163.225/0.12)]
+        shadow-[0_2px_8px_oklch(0.265_0.014_88/0.06)]
+        hover:shadow-[0_12px_32px_oklch(0.265_0.014_88/0.14)]
         hover:border-emerald/20
         transition-[box-shadow,border-color] duration-300
         ${className}`}

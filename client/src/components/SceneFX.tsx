@@ -52,7 +52,7 @@ export function Butterflies({ count = 9 }: { count?: number }) {
             top: `${b.top}%`,
             left: 0,
             animation: `${b.fly} ${b.dur}s linear ${b.delay}s infinite`,
-            filter: "drop-shadow(0 6px 10px oklch(0.2 0.02 160 / 0.28))",
+            filter: "drop-shadow(0 6px 10px oklch(0.20 0.008 240 / 0.28))",
           }}
         >
           <Butterfly hue={b.hue} size={b.size} flap={b.flap} />
@@ -166,7 +166,7 @@ export function FilmGrain({ id, opacity = 0.075 }: { id: string; opacity?: numbe
         aria-hidden="true"
         style={{
           background:
-            "radial-gradient(125% 95% at 50% 45%, transparent 42%, oklch(0.14 0.025 160 / 0.6) 100%)",
+            "radial-gradient(125% 95% at 50% 45%, transparent 42%, oklch(0.14 0.006 235 / 0.6) 100%)",
         }}
       />
       <div

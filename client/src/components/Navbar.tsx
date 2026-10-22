@@ -73,7 +73,7 @@ export default function Navbar() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? "glass-card shadow-[0_1px_0_oklch(0.596_0.145_163.225/0.12)] border-b border-emerald/10"
+            ? "glass-card shadow-[0_1px_0_oklch(0.575_0.115_165/0.12)] border-b border-emerald/10"
             : "bg-transparent"
         }`}
       >

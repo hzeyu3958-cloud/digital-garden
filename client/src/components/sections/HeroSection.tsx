@@ -54,11 +54,14 @@ export default function HeroSection({ active = true }: { active?: boolean }) {
         position="center 68%"
         panY={0.68}
         bloomAt={{ x: "50%", y: "36%", size: "34%" }}
+        /* 进门那一刻从花苞展开：坐标对着 garden-hero.jpg 量，半径以图高为单位 */
+        flowerBloom={{ x: 0.5, y: 0.41, radius: 0.36, delay: 0.35, duration: 2.8 }}
+        flowerOpen={active}
         shimmerAt={{ left: "0%", top: "57%", width: "46%", height: "16%" }}
         butterflies={11}
         petals={14}
         sparkles={22}
-        overlay="linear-gradient(180deg, oklch(0.15 0.022 160 / 0.34) 0%, transparent 34%, oklch(0.13 0.02 158 / 0.58) 88%, oklch(0.12 0.02 158 / 0.78) 100%)"
+        overlay="linear-gradient(180deg, oklch(0.13 0.005 245 / 0.22) 0%, transparent 32%, oklch(0.11 0.005 245 / 0.44) 88%, oklch(0.10 0.005 245 / 0.62) 100%)"
       />
 
       {/* ---------- 内容：左下对齐 ---------- */}
@@ -90,7 +93,7 @@ export default function HeroSection({ active = true }: { active?: boolean }) {
           className="text-[clamp(2.4rem,8.6vw,7rem)] leading-[1.04] text-parchment"
           style={{
             fontFamily: "var(--font-display)",
-            textShadow: "0 6px 30px oklch(0.12 0.02 158 / 0.55), 0 1px 3px oklch(0.1 0.02 158 / 0.5)",
+            textShadow: "0 6px 30px oklch(0.10 0.004 240 / 0.55), 0 1px 3px oklch(0.10 0.004 240 / 0.45)",
           }}
         >
           <span className="block">

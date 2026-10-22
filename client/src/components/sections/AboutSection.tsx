@@ -37,7 +37,7 @@ export default function AboutSection({ active = true }: { active?: boolean }) {
                 className="grid h-full w-full place-items-center"
                 style={{
                   background:
-                    "linear-gradient(150deg, oklch(0.432 0.120 163.225) 0%, oklch(0.280 0.030 160) 100%)",
+                    "linear-gradient(150deg, oklch(0.340 0.040 172) 0%, oklch(0.185 0.018 200) 100%)",
                 }}
               >
                 <span

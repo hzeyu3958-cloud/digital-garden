@@ -24,6 +24,10 @@ interface LivingSceneProps {
   panY?: number;
   /** 呼吸光斑的中心，百分比字符串 */
   bloomAt?: { x: string; y: string; size: string };
+  /** 花朵绽放：花心用「原图」坐标 0~1，radius 以图高为单位 */
+  flowerBloom?: { x: number; y: number; radius: number; delay?: number; duration?: number };
+  /** 绽放开关，一般接分区的 active */
+  flowerOpen?: boolean;
   /** 水面波光覆盖的矩形 */
   shimmerAt?: { left: string; top: string; width: string; height: string };
   overlay?: string;
@@ -35,8 +39,9 @@ interface LivingSceneProps {
   children?: React.ReactNode;
 }
 
+/* 压暗层只负责可读性，不参与上色：带绿相的纱幕会把照片自己的天蓝与花色吃掉 */
 const DEFAULT_OVERLAY =
-  "linear-gradient(180deg, oklch(0.16 0.025 160 / 0.42) 0%, oklch(0.16 0.025 160 / 0.05) 38%, oklch(0.14 0.022 158 / 0.62) 100%)";
+  "linear-gradient(180deg, oklch(0.13 0.005 245 / 0.26) 0%, oklch(0.13 0.005 245 / 0.02) 38%, oklch(0.11 0.005 245 / 0.46) 100%)";
 
 export default function LivingScene({
   src,
@@ -45,6 +50,8 @@ export default function LivingScene({
   position = "center",
   panY = 0.5,
   bloomAt,
+  flowerBloom,
+  flowerOpen,
   shimmerAt,
   overlay = DEFAULT_OVERLAY,
   butterflies = 9,
@@ -95,7 +102,13 @@ export default function LivingScene({
             className={`absolute ${blur > 0 ? "inset-[-4%]" : "inset-0"}`}
             style={blur ? { filter: `blur(${blur}px)` } : undefined}
           >
-            <SceneGL src={src} panY={panY} onReady={() => setGlOn(true)} />
+            <SceneGL
+              src={src}
+              panY={panY}
+              flowerBloom={flowerBloom}
+              flowerOpen={flowerOpen}
+              onReady={() => setGlOn(true)}
+            />
           </div>
 
           {/* 回退层：着色器不可用时才动 */}

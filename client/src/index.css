@@ -41,19 +41,25 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Custom botanical theme colors */
-  --color-emerald: oklch(0.596 0.145 163.225);
-  --color-emerald-light: oklch(0.765 0.115 163.225);
-  --color-emerald-dark: oklch(0.432 0.120 163.225);
-  --color-moss: oklch(0.720 0.080 148);
+  /* Custom botanical theme colors
+   * 配色纪律：绿色只做点缀（图标、链接、分隔线），不再兼任中性色。
+   * 之前中性色全带 148~163 的绿相，叠加照片纱幕和绿色光晕，整页像泡在菠菜汤里。
+   * 现在中性走暖纸（hue ≈ 88），与 parchment 同族；绿只保留一个压了彩度的版本。
+   */
+  --color-emerald: oklch(0.575 0.115 165);
+  --color-emerald-light: oklch(0.740 0.090 163);
+  --color-emerald-dark: oklch(0.420 0.085 168);
+  --color-moss: oklch(0.680 0.055 148);
   /* 全站金色点缀统一走这个 token：之前只定义了 amber-gold，
      导致 text-gold / bg-gold 这类根本不存在，金色一直在静默失效 */
   --color-gold: oklch(0.700 0.130 85);
   --color-gold-soft: oklch(0.820 0.090 86);
   --color-amber-gold: oklch(0.700 0.130 85);
-  --color-parchment: oklch(0.975 0.008 85);
-  --color-parchment-warm: oklch(0.960 0.012 80);
-  --color-ink: oklch(0.280 0.030 160);
+  --color-parchment: oklch(0.975 0.006 88);
+  --color-parchment-warm: oklch(0.960 0.008 88);
+  --color-ink: oklch(0.265 0.014 88);
+  /* 压在照片上的遮罩专用：近中性、只留一丝冷调，不偷走照片自己的天蓝与花色 */
+  --scrim: oklch(0.13 0.005 245);
 
   /* Font families —— 拉丁文自托管，中文走系统字族（不下载几 MB 的 Noto SC） */
   --font-display: 'DM Serif Display', 'Source Han Serif SC', 'Noto Serif SC', 'Songti SC', 'STSong', Georgia, serif;
@@ -83,8 +89,8 @@
 }
 
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 5px oklch(0.596 0.145 163.225 / 0.2); }
-  50% { box-shadow: 0 0 20px oklch(0.596 0.145 163.225 / 0.4); }
+  0%, 100% { box-shadow: 0 0 5px oklch(0.700 0.130 85 / 0.16); }
+  50%      { box-shadow: 0 0 20px oklch(0.700 0.130 85 / 0.32); }
 }
 
 @keyframes gradient-shift {
@@ -104,39 +110,39 @@
 }
 
 :root {
-  --primary: oklch(0.596 0.145 163.225);
-  --primary-foreground: oklch(0.985 0.005 85);
-  --sidebar-primary: oklch(0.596 0.145 163.225);
-  --sidebar-primary-foreground: oklch(0.985 0.005 85);
-  --chart-1: oklch(0.596 0.145 163.225);
-  --chart-2: oklch(0.720 0.080 148);
+  --primary: oklch(0.575 0.115 165);
+  --primary-foreground: oklch(0.985 0.004 88);
+  --sidebar-primary: oklch(0.575 0.115 165);
+  --sidebar-primary-foreground: oklch(0.985 0.004 88);
+  --chart-1: oklch(0.575 0.115 165);
+  --chart-2: oklch(0.680 0.055 148);
   --chart-3: oklch(0.700 0.130 85);
-  --chart-4: oklch(0.432 0.120 163.225);
-  --chart-5: oklch(0.765 0.115 163.225);
+  --chart-4: oklch(0.420 0.085 168);
+  --chart-5: oklch(0.740 0.090 163);
   --radius: 0.5rem;
-  --background: oklch(0.985 0.005 85);
-  --foreground: oklch(0.280 0.030 160);
-  --card: oklch(0.990 0.003 85);
-  --card-foreground: oklch(0.280 0.030 160);
-  --popover: oklch(0.990 0.003 85);
-  --popover-foreground: oklch(0.280 0.030 160);
-  --secondary: oklch(0.960 0.012 80);
-  --secondary-foreground: oklch(0.350 0.040 160);
-  --muted: oklch(0.950 0.010 148);
-  --muted-foreground: oklch(0.500 0.030 160);
-  --accent: oklch(0.940 0.025 163);
-  --accent-foreground: oklch(0.280 0.030 160);
+  --background: oklch(0.985 0.004 88);
+  --foreground: oklch(0.265 0.014 88);
+  --card: oklch(0.992 0.003 88);
+  --card-foreground: oklch(0.265 0.014 88);
+  --popover: oklch(0.992 0.003 88);
+  --popover-foreground: oklch(0.265 0.014 88);
+  --secondary: oklch(0.960 0.007 88);
+  --secondary-foreground: oklch(0.330 0.016 88);
+  --muted: oklch(0.955 0.006 88);
+  --muted-foreground: oklch(0.475 0.014 88);
+  --accent: oklch(0.945 0.010 88);
+  --accent-foreground: oklch(0.265 0.014 88);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.900 0.020 148);
-  --input: oklch(0.900 0.020 148);
-  --ring: oklch(0.596 0.145 163.225);
-  --sidebar: oklch(0.975 0.008 85);
-  --sidebar-foreground: oklch(0.280 0.030 160);
-  --sidebar-accent: oklch(0.940 0.025 163);
-  --sidebar-accent-foreground: oklch(0.280 0.030 160);
-  --sidebar-border: oklch(0.900 0.020 148);
-  --sidebar-ring: oklch(0.596 0.145 163.225);
+  --border: oklch(0.900 0.008 88);
+  --input: oklch(0.900 0.008 88);
+  --ring: oklch(0.575 0.115 165);
+  --sidebar: oklch(0.975 0.006 88);
+  --sidebar-foreground: oklch(0.265 0.014 88);
+  --sidebar-accent: oklch(0.945 0.010 88);
+  --sidebar-accent-foreground: oklch(0.265 0.014 88);
+  --sidebar-border: oklch(0.900 0.008 88);
+  --sidebar-ring: oklch(0.575 0.115 165);
 }
 
 @layer base {
@@ -189,25 +195,25 @@
 
   /* === Glass Morphism === */
   .glass-card {
-    background: oklch(0.990 0.003 85 / 0.75);
+    background: oklch(0.992 0.003 88 / 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid oklch(0.900 0.020 148 / 0.6);
+    border: 1px solid oklch(0.900 0.008 88 / 0.6);
   }
 
   .glass-card-dark {
-    background: oklch(0.280 0.030 160 / 0.75);
+    background: oklch(0.240 0.010 200 / 0.62);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid oklch(0.500 0.030 160 / 0.3);
+    border: 1px solid oklch(0.90 0.01 90 / 0.16);
   }
 
   /* === Gradient Text === */
   .gradient-text {
     background: linear-gradient(
       135deg,
-      oklch(0.432 0.120 163.225) 0%,
-      oklch(0.596 0.145 163.225) 40%,
+      oklch(0.420 0.085 168) 0%,
+      oklch(0.575 0.115 165) 40%,
       oklch(0.700 0.130 85) 100%
     );
     background-size: 200% 200%;
@@ -220,26 +226,27 @@
   .gradient-text-static {
     background: linear-gradient(
       135deg,
-      oklch(0.432 0.120 163.225),
-      oklch(0.596 0.145 163.225)
+      oklch(0.420 0.085 168),
+      oklch(0.575 0.115 165)
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* === Glow Effects === */
+  /* === Glow Effects ===
+   * 绿光晕是最先露出「廉价感」的东西，改成暖金微光并把半径压小 */
   .glow-emerald {
     box-shadow:
-      0 0 15px oklch(0.596 0.145 163.225 / 0.1),
-      0 0 30px oklch(0.596 0.145 163.225 / 0.05);
+      0 0 14px oklch(0.700 0.130 85 / 0.07),
+      0 0 28px oklch(0.700 0.130 85 / 0.035);
   }
 
   .glow-emerald-strong {
     box-shadow:
-      0 0 20px oklch(0.596 0.145 163.225 / 0.2),
-      0 0 40px oklch(0.596 0.145 163.225 / 0.1),
-      0 0 60px oklch(0.596 0.145 163.225 / 0.05);
+      0 0 18px oklch(0.700 0.130 85 / 0.13),
+      0 0 36px oklch(0.700 0.130 85 / 0.06),
+      0 0 56px oklch(0.575 0.115 165 / 0.04);
   }
 
   /* === Card 3D Tilt === */
@@ -252,8 +259,8 @@
   .card-3d:hover {
     transform: translateY(-6px) rotateX(2deg) rotateY(-1deg);
     box-shadow:
-      0 20px 40px oklch(0.596 0.145 163.225 / 0.12),
-      0 0 0 1px oklch(0.596 0.145 163.225 / 0.2);
+      0 20px 40px oklch(0.32 0.010 240 / 0.13),
+      0 0 0 1px oklch(0.900 0.008 88 / 0.9);
   }
 
   /* === Animated Border === */
@@ -269,9 +276,9 @@
     padding: 1px;
     background: linear-gradient(
       135deg,
-      oklch(0.596 0.145 163.225 / 0) 0%,
-      oklch(0.596 0.145 163.225 / 0.3) 50%,
-      oklch(0.700 0.130 85 / 0.3) 100%
+      oklch(0.575 0.115 165 / 0) 0%,
+      oklch(0.575 0.115 165 / 0.22) 50%,
+      oklch(0.700 0.130 85 / 0.34) 100%
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -306,27 +313,27 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      oklch(0.596 0.145 163.225 / 0.3) 20%,
-      oklch(0.596 0.145 163.225 / 0.6) 50%,
-      oklch(0.596 0.145 163.225 / 0.3) 80%,
+      oklch(0.575 0.115 165 / 0.22) 20%,
+      oklch(0.700 0.130 85 / 0.45) 50%,
+      oklch(0.575 0.115 165 / 0.22) 80%,
       transparent 100%
     );
   }
 
   /* Parchment texture overlay */
   .parchment-bg {
-    background-color: oklch(0.975 0.008 85);
+    background-color: oklch(0.985 0.004 88);
     background-image:
-      radial-gradient(ellipse at 20% 50%, oklch(0.940 0.025 163 / 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 50%, oklch(0.945 0.010 88 / 0.9) 0%, transparent 50%),
       radial-gradient(ellipse at 80% 20%, oklch(0.700 0.130 85 / 0.05) 0%, transparent 40%),
-      radial-gradient(ellipse at 60% 80%, oklch(0.596 0.145 163.225 / 0.04) 0%, transparent 45%);
+      radial-gradient(ellipse at 60% 80%, oklch(0.575 0.115 165 / 0.03) 0%, transparent 45%);
   }
 
   /* Decorative watermark text */
   .watermark-text {
     font-family: var(--font-accent);
     font-style: italic;
-    color: oklch(0.596 0.145 163.225 / 0.06);
+    color: oklch(0.450 0.012 88 / 0.09);
     user-select: none;
     pointer-events: none;
   }
@@ -335,37 +342,37 @@
   .hero-tag {
     background: linear-gradient(
       135deg,
-      oklch(0.596 0.145 163.225 / 0.08),
-      oklch(0.700 0.130 85 / 0.06)
+      oklch(0.970 0.006 88 / 0.9),
+      oklch(0.940 0.012 88 / 0.9)
     );
-    border: 1px solid oklch(0.596 0.145 163.225 / 0.15);
+    border: 1px solid oklch(0.900 0.008 88 / 0.9);
     transition: all 0.3s ease;
   }
 
   .hero-tag:hover {
     background: linear-gradient(
       135deg,
-      oklch(0.596 0.145 163.225 / 0.15),
-      oklch(0.700 0.130 85 / 0.1)
+      oklch(0.575 0.115 165 / 0.10),
+      oklch(0.700 0.130 85 / 0.10)
     );
-    border-color: oklch(0.596 0.145 163.225 / 0.3);
+    border-color: oklch(0.575 0.115 165 / 0.28);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px oklch(0.596 0.145 163.225 / 0.1);
+    box-shadow: 0 4px 12px oklch(0.32 0.010 240 / 0.10);
   }
 
   /* === Stat Card === */
   .stat-card {
-    background: oklch(0.990 0.003 85 / 0.8);
+    background: oklch(0.992 0.003 88 / 0.8);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    border: 1px solid oklch(0.900 0.020 148 / 0.5);
+    border: 1px solid oklch(0.900 0.008 88 / 0.7);
     transition: all 0.3s ease;
   }
 
   .stat-card:hover {
-    background: oklch(0.990 0.003 85 / 0.95);
-    border-color: oklch(0.596 0.145 163.225 / 0.3);
-    box-shadow: 0 8px 25px oklch(0.596 0.145 163.225 / 0.12);
+    background: oklch(0.994 0.003 88 / 0.95);
+    border-color: oklch(0.575 0.115 165 / 0.26);
+    box-shadow: 0 8px 25px oklch(0.32 0.010 240 / 0.11);
     transform: translateY(-2px);
   }
 }
@@ -587,20 +594,20 @@ html.lenis body {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: oklch(0.960 0.012 80);
+  background: oklch(0.970 0.005 88);
 }
 ::-webkit-scrollbar-thumb {
-  background: oklch(0.596 0.145 163.225 / 0.4);
+  background: oklch(0.575 0.115 165 / 0.32);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.596 0.145 163.225 / 0.6);
+  background: oklch(0.575 0.115 165 / 0.52);
 }
 
 /* Selection color */
 ::selection {
-  background: oklch(0.596 0.145 163.225 / 0.2);
-  color: oklch(0.280 0.030 160);
+  background: oklch(0.700 0.130 85 / 0.26);
+  color: oklch(0.265 0.014 88);
 }
 
 /* 尊重系统「减少动态效果」 */

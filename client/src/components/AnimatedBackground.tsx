@@ -17,12 +17,13 @@ interface Particle {
 
 export default function AnimatedBackground() {
   const particles = useMemo<Particle[]>(() => {
+    /* 光斑以暖纸/金为主，绿只留两颗当点缀：五个里四个绿会把整页染成青苔色 */
     const colors = [
-      "oklch(0.596 0.145 163.225 / 0.08)",
-      "oklch(0.765 0.115 163.225 / 0.06)",
+      "oklch(0.900 0.020 88 / 0.10)",
       "oklch(0.700 0.130 85 / 0.05)",
-      "oklch(0.432 0.120 163.225 / 0.06)",
-      "oklch(0.940 0.025 163 / 0.07)",
+      "oklch(0.575 0.115 165 / 0.04)",
+      "oklch(0.860 0.028 145 / 0.06)",
+      "oklch(0.940 0.010 80 / 0.09)",
     ];
     const items: Particle[] = [];
     for (let i = 0; i < 15; i++) {

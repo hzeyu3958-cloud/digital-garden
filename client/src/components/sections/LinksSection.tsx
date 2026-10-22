@@ -35,7 +35,7 @@ export default function LinksSection() {
               ease: [0.25, 0.46, 0.45, 0.94],
             }}
             className="bg-card border border-border/60 rounded-sm p-6 lg:p-7
-              hover:border-emerald/25 hover:shadow-[0_8px_24px_oklch(0.596_0.145_163.225/0.08)]
+              hover:border-emerald/25 hover:shadow-[0_8px_24px_oklch(0.265_0.014_88/0.12)]
               transition-all duration-300"
           >
             {/* Group header */}

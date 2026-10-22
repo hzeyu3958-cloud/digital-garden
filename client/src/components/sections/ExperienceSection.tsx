@@ -31,7 +31,7 @@ export default function ExperienceSection({ active = true }: { active?: boolean 
       className="relative min-h-[890px] overflow-hidden py-24 lg:py-32"
       style={{
         background:
-          "linear-gradient(180deg, oklch(0.185 0.032 160) 0%, oklch(0.240 0.038 158) 48%, oklch(0.175 0.028 156) 100%)",
+          "linear-gradient(180deg, oklch(0.165 0.012 190) 0%, oklch(0.215 0.018 176) 48%, oklch(0.150 0.010 205) 100%)",
       }}
     >
       <GardenParticles className="pointer-events-none absolute inset-0 z-0 h-full w-full" />
@@ -60,7 +60,7 @@ export default function ExperienceSection({ active = true }: { active?: boolean 
               className="relative pb-12 last:pb-0"
             >
               {/* 节点 */}
-              <span className="absolute -left-[41px] top-1.5 h-3 w-3 rounded-full bg-emerald shadow-[0_0_0_5px_oklch(0.596_0.145_163.225/0.18)] lg:-left-[49px]" />
+              <span className="absolute -left-[41px] top-1.5 h-3 w-3 rounded-full bg-emerald shadow-[0_0_0_5px_oklch(0.575_0.115_165/0.18)] lg:-left-[49px]" />
 
               <p
                 className="text-xs uppercase tracking-[0.24em] text-gold/70"

@@ -14,9 +14,11 @@ import SplitHeading from "./SplitHeading";
 import { site } from "../content/site";
 import { sfx } from "../lib/gardenAudio";
 
-const INK = "oklch(0.285 0.035 158)";
-const PARCHMENT = "oklch(0.975 0.008 85)";
+const INK = "oklch(0.270 0.020 168)";
+const PARCHMENT = "oklch(0.978 0.005 88)";
 const GOLD = "oklch(0.700 0.130 85)";
+/* 纱幕专用近中性：带绿相会把花园照片的天蓝洗成菜汤色 */
+const scrim = (alpha: number) => `oklch(0.11 0.005 245 / ${alpha})`;
 const LOAD_MS = 2100;
 const AUTO_ENTER_MS = 12000;
 
@@ -96,11 +98,6 @@ export default function GardenIntro({ onEnter }: { onEnter: () => void }) {
       sfx.unlock();
       sfx.whoosh();
       window.setTimeout(() => sfx.enter(), 200);
-      try {
-        sessionStorage.setItem("garden-entered", "1");
-      } catch {
-        /* 隐私模式下忽略 */
-      }
       /* 推进镜头 1.15s，走完再卸载 */
       window.setTimeout(onEnter, skipped ? 780 : 1200);
     },
@@ -154,7 +151,7 @@ export default function GardenIntro({ onEnter }: { onEnter: () => void }) {
         butterflies={8}
         petals={9}
         sparkles={16}
-        overlay="linear-gradient(180deg, oklch(0.15 0.022 160 / 0.45) 0%, transparent 30%, transparent 62%, oklch(0.13 0.02 158 / 0.72) 100%)"
+        overlay={`linear-gradient(180deg, ${scrim(0.24)} 0%, transparent 26%, transparent 62%, ${scrim(0.5)} 100%)`}
       />
 
       {/* ---------- 左上双语标识 ---------- */}
@@ -260,7 +257,7 @@ export default function GardenIntro({ onEnter }: { onEnter: () => void }) {
             backgroundColor: "oklch(0.98 0.006 85 / 0.16)",
             border: `1px solid oklch(1 0 0 / 0.35)`,
             color: PARCHMENT,
-            boxShadow: "0 14px 40px -18px oklch(0.1 0.02 160 / 0.8)",
+            boxShadow: `0 14px 40px -18px ${scrim(0.75)}`,
           }}
         >
           Enter Digital Garden
@@ -277,7 +274,7 @@ export default function GardenIntro({ onEnter }: { onEnter: () => void }) {
             style={{
               color: PARCHMENT,
               opacity: 0.6,
-              backgroundColor: "oklch(0.12 0.02 158 / 0.42)",
+              backgroundColor: scrim(0.4),
               border: "1px solid oklch(1 0 0 / 0.16)",
             }}
           >

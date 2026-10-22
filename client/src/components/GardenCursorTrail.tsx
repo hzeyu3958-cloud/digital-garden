@@ -101,13 +101,13 @@ export default function GardenCursorTrail() {
           >
             <path
               d={LEAF_PATHS[leaf.variant]}
-              fill="oklch(0.596 0.145 163.225 / 0.16)"
-              stroke="oklch(0.432 0.120 163.225 / 0.5)"
+              fill="oklch(0.575 0.115 165 / 0.16)"
+              stroke="oklch(0.420 0.085 168 / 0.5)"
               strokeWidth="1"
             />
             <path
               d="M20 7 L20 33 M20 16 L14 11 M20 16 L26 11 M20 24 L15 19 M20 24 L25 19"
-              stroke="oklch(0.432 0.120 163.225 / 0.35)"
+              stroke="oklch(0.420 0.085 168 / 0.35)"
               strokeWidth="0.7"
             />
           </motion.svg>

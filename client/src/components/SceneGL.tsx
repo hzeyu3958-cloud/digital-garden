@@ -36,6 +36,7 @@ uniform float uPan;
 uniform float uScroll;   /* 本分区在视口里的穿过进度 0~1 */
 uniform vec2 uPointer;   /* 光标归一化坐标，默认居中 */
 uniform vec3 uRipples[6]; /* xy=落点 z=起始时刻（z<0 表示槽位空） */
+uniform vec4 uBloom;     /* 花朵绽放：xy=花心（纹理坐标） z=影响半径 w=绽放进度（w<0 不启用） */
 
 void main() {
   /* ---- 等比 cover 铺满，不变形 ---- */
@@ -46,6 +47,27 @@ void main() {
 
   /* 纵向对焦：等价于 CSS background-position 的垂直百分比 */
   uv.y += (uPan - 0.5) * (1.0 - fit.y);
+
+  /* ---- 花朵绽放 ----
+   * 放在镜头变换之前、用纹理坐标做，所以花跟着画面一起推拉摆动，不会错位。
+   * 未开：外圈纹理往花心收拢（整朵小一圈）+ 螺旋扭转（花瓣叠成花苞）
+   * 开足：只剩六瓣周期性的轻微起伏，让它一直「活着」而不是贴回静帧
+   */
+  if (uBloom.w >= 0.0) {
+    vec2 px = vec2(imgA, 1.0); /* 拉成等比空间，影响区才是圆不是椭圆 */
+    vec2 off = (uv - uBloom.xy) * px;
+    float r = length(off);
+    float f = 1.0 - smoothstep(0.0, uBloom.z, r);
+    float open = clamp(uBloom.w, 0.0, 1.0);
+    float squeeze = mix(1.0 + 0.55 * f, 1.0, open);
+    float twist = (1.0 - open) * 1.25 * f;
+    float cs = cos(twist), sn = sin(twist);
+    vec2 ro = mat2(cs, -sn, sn, cs) * off;
+    vec2 nrm = r > 0.0005 ? off / r : vec2(0.0);
+    float petal =
+      sin(atan(off.y, off.x) * 6.0 + uTime * 1.05) * 0.006 * f * (0.25 + 0.75 * open) * uAmp;
+    uv = uBloom.xy + (ro + nrm * petal) * squeeze / px;
+  }
 
   float sc = clamp(uScroll, 0.0, 1.0);
   /* 滚动推镜：分区从下方升到充满视口时，镜头从稍远推到稍近，视线往下走 */
@@ -113,6 +135,13 @@ interface SceneGLProps {
   amp?: number;
   /** 纵向对焦 0~1，0.5 = 居中 */
   panY?: number;
+  /**
+   * 花朵绽放的几何参数：x/y 是花心在「原图」里的位置（0~1，直接对着图量），
+   * radius 以图高为单位，delay/duration 单位秒。
+   */
+  flowerBloom?: { x: number; y: number; radius: number; delay?: number; duration?: number };
+  /** 绽放开关：false 保持花苞，true 时按 duration 展开（着色器不可用时退化为静帧） */
+  flowerOpen?: boolean;
   className?: string;
   onReady?: () => void;
 }
@@ -129,9 +158,25 @@ function compile(gl: WebGLRenderingContext, type: number, source: string) {
   return sh;
 }
 
-export default function SceneGL({ src, amp = 1, panY = 0.5, className = "", onReady }: SceneGLProps) {
+export default function SceneGL({
+  src,
+  amp = 1,
+  panY = 0.5,
+  flowerBloom,
+  flowerOpen = false,
+  className = "",
+  onReady,
+}: SceneGLProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [failed, setFailed] = useState(false);
+
+  /*
+   * 绽放配置走 ref 而不是 effect 依赖：外层每次渲染都会传新的字面量对象，
+   * 进依赖会把整个 WebGL 上下文重建一次（画面闪一下）。
+   */
+  const cfg = useRef({ flowerBloom, flowerOpen });
+  cfg.current = { flowerBloom, flowerOpen };
+  const clock = useRef({ on: false, t0: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -192,10 +237,13 @@ export default function SceneGL({ src, amp = 1, panY = 0.5, className = "", onRe
       scroll: gl.getUniformLocation(prog, "uScroll"),
       pointer: gl.getUniformLocation(prog, "uPointer"),
       ripples: gl.getUniformLocation(prog, "uRipples"),
+      bloom: gl.getUniformLocation(prog, "uBloom"),
     };
     gl.uniform1i(U.tex, 0);
     gl.uniform1f(U.amp, amp);
     gl.uniform1f(U.pan, panY);
+    /* 默认不启用绽放，等 draw() 里按进度接管 */
+    gl.uniform4f(U.bloom, 0.5, 0.5, 0.34, -1);
     /* 静态帧（reduced-motion 只画一帧）用居中进度，保证构图与动帧一致 */
     gl.uniform1f(U.scroll, 0.5);
 
@@ -278,6 +326,23 @@ export default function SceneGL({ src, amp = 1, panY = 0.5, className = "", onRe
       }
       scrollState.v += (scrollState.t - scrollState.v) * 0.07;
       gl.uniform1f(U.scroll, scrollState.v);
+
+      /* ---- 花朵绽放：翻开开关那一帧起算，缓出展开，开足后留一丝呼吸 ---- */
+      const fb = cfg.current.flowerBloom;
+      if (fb) {
+        const want = !!cfg.current.flowerOpen;
+        if (want !== clock.current.on) {
+          clock.current.on = want;
+          clock.current.t0 = performance.now();
+        }
+        const dur = Math.max(0.2, fb.duration ?? 2.6);
+        const el = (performance.now() - clock.current.t0) / 1000 - (fb.delay ?? 0);
+        /* reduced-motion 不播动画，直接给开足的那一帧 */
+        const p = reduce ? 1 : want ? Math.min(1, Math.max(0, el / dur)) : 0;
+        const ease = 1 - Math.pow(1 - p, 3);
+        const open = ease >= 0.999 ? 0.985 + 0.015 * Math.sin(t * 0.5) : ease;
+        gl.uniform4f(U.bloom, fb.x, fb.y, fb.radius, open);
+      }
 
       /* 过期的涟漪槽回收，保证循环里只剩活跃波形 */
       for (let i = 0; i < 6; i++) {

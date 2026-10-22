@@ -35,9 +35,10 @@ export default function Footer() {
       {/* Top wave divider */}
       <div className="absolute top-0 left-0 right-0 -translate-y-[1px]">
         <svg viewBox="0 0 1440 48" className="w-full h-10 lg:h-12" preserveAspectRatio="none">
+          {/* 波浪填色走同一个 token：写死数值的话会和中性色不同步，顶部出现一条接缝 */}
           <path
             d="M0,48 L0,24 C240,8 480,0 720,16 C960,32 1200,8 1440,24 L1440,48 Z"
-            fill="oklch(0.280 0.030 160)"
+            fill="var(--color-ink)"
           />
         </svg>
       </div>
@@ -54,7 +55,7 @@ export default function Footer() {
               <Leaf className="w-5 h-5 text-emerald-light" />
               <span
                 className="text-xl tracking-wide"
-                style={{ fontFamily: "var(--font-display)", color: "oklch(0.940 0.025 163)" }}
+                style={{ fontFamily: "var(--font-display)", color: "var(--color-parchment)" }}
               >
                 {site.meta.siteName}
               </span>

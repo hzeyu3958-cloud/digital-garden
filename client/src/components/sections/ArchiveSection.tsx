@@ -30,12 +30,12 @@ const LIFT = [18, 0, 18];
 function ArchiveStage() {
   return (
     <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
-      {/* 底色：从上往下由浅绿转深墨 */}
+      {/* 底色：顶部留一丝植物绿，往下沉到中性夜墨，靠明度拉开深度而不是靠抹绿 */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(178deg, oklch(0.34 0.055 165) 0%, oklch(0.22 0.040 162) 38%, oklch(0.135 0.024 158) 78%, oklch(0.105 0.018 155) 100%)",
+            "linear-gradient(178deg, oklch(0.300 0.022 168) 0%, oklch(0.205 0.014 178) 38%, oklch(0.130 0.010 198) 78%, oklch(0.098 0.008 215) 100%)",
         }}
       />
 
@@ -64,11 +64,11 @@ function ArchiveStage() {
       {/* 远景树影：两层模糊团块拉开前后景 */}
       <div
         className="absolute bottom-[18%] left-[-6%] h-[46%] w-[52%] rounded-[50%] blur-[52px] opacity-45"
-        style={{ background: "oklch(0.30 0.060 160)" }}
+        style={{ background: "oklch(0.28 0.024 168)" }}
       />
       <div
         className="absolute bottom-[14%] right-[-8%] h-[38%] w-[46%] rounded-[50%] blur-[46px] opacity-40"
-        style={{ background: "oklch(0.26 0.050 158)" }}
+        style={{ background: "oklch(0.24 0.018 180)" }}
       />
 
       {/* 水面：三条横向亮线错开漂，提示脚边有一片湖 */}
@@ -99,7 +99,7 @@ function ArchiveStage() {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(120% 90% at 50% 38%, transparent 42%, oklch(0.11 0.02 156 / 0.72) 100%), linear-gradient(180deg, oklch(0.13 0.02 158 / 0.34) 0%, transparent 34%, oklch(0.10 0.018 156 / 0.62) 100%)",
+            "radial-gradient(120% 90% at 50% 38%, transparent 42%, oklch(0.085 0.005 215 / 0.70) 100%), linear-gradient(180deg, oklch(0.10 0.005 200 / 0.28) 0%, transparent 34%, oklch(0.075 0.004 220 / 0.55) 100%)",
         }}
       />
     </div>
@@ -173,7 +173,7 @@ function GlassCard({
             "linear-gradient(165deg, oklch(0.99 0.006 85 / 0.30) 0%, oklch(0.96 0.01 90 / 0.12) 42%, oklch(0.90 0.02 100 / 0.22) 100%)",
           border: "1px solid oklch(1 0 0 / 0.42)",
           boxShadow:
-            "0 30px 60px -28px oklch(0.1 0.02 158 / 0.75), inset 0 1px 0 oklch(1 0 0 / 0.55), inset 0 -18px 30px -22px oklch(1 0 0 / 0.35)",
+            "0 30px 60px -28px oklch(0.07 0.004 220 / 0.75), inset 0 1px 0 oklch(1 0 0 / 0.55), inset 0 -18px 30px -22px oklch(1 0 0 / 0.35)",
         }}
       />
       {/* 顶部一道斜反光 */}
@@ -209,7 +209,7 @@ function GlassCard({
 
       <span
         className="relative mt-5 block text-2xl leading-snug text-parchment lg:text-[1.7rem]"
-        style={{ fontFamily: "var(--font-display)", textShadow: "0 2px 12px oklch(0.12 0.02 158 / 0.6)" }}
+        style={{ fontFamily: "var(--font-display)", textShadow: "0 2px 12px oklch(0.08 0.004 220 / 0.6)" }}
       >
         {card.cn}
       </span>
@@ -269,7 +269,7 @@ export default function ArchiveSection({ active = true }: { active?: boolean }) 
             className="text-4xl leading-[1.05] text-parchment lg:text-6xl"
             style={{
               fontFamily: "var(--font-display)",
-              textShadow: "0 8px 34px oklch(0.1 0.02 158 / 0.65)",
+              textShadow: "0 8px 34px oklch(0.07 0.004 220 / 0.65)",
             }}
           />
           <motion.p
@@ -313,7 +313,7 @@ export default function ArchiveSection({ active = true }: { active?: boolean }) 
                 background:
                   "linear-gradient(150deg, oklch(0.99 0.006 85 / 0.34), oklch(0.94 0.014 95 / 0.16))",
                 border: "1px solid oklch(1 0 0 / 0.4)",
-                boxShadow: "0 22px 44px -24px oklch(0.1 0.02 158 / 0.7)",
+                boxShadow: "0 22px 44px -24px oklch(0.07 0.004 220 / 0.7)",
               } as React.CSSProperties
             }
           >

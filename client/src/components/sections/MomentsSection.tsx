@@ -29,12 +29,13 @@ const SIZES = [
   "h-[320px] w-[240px]",
 ];
 
-/** 文字卡的植物底：四色轮换，避免一整排同一个调子 */
+/** 文字卡的底：四色轮换。以前四块全往绿上收，连排就是一堆色块；
+ *  现在按「鼠尾草绿 / 暖纸 / 灰蓝绿 / 砂石」走，彩度压到 0.02~0.05，只保留植物志的调性 */
 const PLATES = [
-  "linear-gradient(150deg, oklch(0.94 0.022 150) 0%, oklch(0.86 0.048 158) 55%, oklch(0.74 0.068 152) 100%)",
-  "linear-gradient(200deg, oklch(0.96 0.016 90) 0%, oklch(0.9 0.035 140) 60%, oklch(0.79 0.055 158) 100%)",
-  "linear-gradient(160deg, oklch(0.93 0.03 165) 0%, oklch(0.83 0.05 160) 50%, oklch(0.7 0.06 150) 100%)",
-  "linear-gradient(215deg, oklch(0.95 0.02 100) 0%, oklch(0.88 0.04 150) 45%, oklch(0.76 0.06 160) 100%)",
+  "linear-gradient(150deg, oklch(0.950 0.014 145) 0%, oklch(0.890 0.026 150) 55%, oklch(0.800 0.036 154) 100%)",
+  "linear-gradient(200deg, oklch(0.968 0.010 88) 0%, oklch(0.915 0.024 92) 60%, oklch(0.830 0.046 96) 100%)",
+  "linear-gradient(160deg, oklch(0.938 0.012 178) 0%, oklch(0.858 0.024 180) 50%, oklch(0.762 0.034 184) 100%)",
+  "linear-gradient(215deg, oklch(0.958 0.009 80) 0%, oklch(0.892 0.020 110) 45%, oklch(0.800 0.032 132) 100%)",
 ];
 
 function Card({

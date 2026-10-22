@@ -23,10 +23,25 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-/* ---------- 主题色（与 index.css 中的植物学配色一致） ---------- */
-const emerald = "oklch(0.596 0.145 163.225)";
-const forest = "oklch(0.432 0.120 163.225)";
+/* ---------- 主题色（与 index.css 的植物学 token 保持一致） ----------
+ * 绿色只做小面积点缀（图标、标签），彩度已压低，数值改这里就要同步改 index.css。
+ */
+const emerald = "oklch(0.575 0.115 165)";
+const forest = "oklch(0.420 0.085 168)";
 const gold = "oklch(0.700 0.130 85)";
+
+/* ---------- 素材路径 ----------
+ * 站点部署在 GitHub Pages 的 /digital-garden/ 子路径下，写成 "/images/x.jpg"
+ * 会指到域名根目录（实测 404，开场门和首屏就变成空背景）。
+ * 统一按当前页面地址解析，本地根路径和子路径部署都对。
+ */
+const asset = (p: string) => {
+  try {
+    return new URL(p, document.baseURI).href;
+  } catch {
+    return `/${p}`;
+  }
+};
 
 /* ---------- 类型 ---------- */
 export interface Highlight {
@@ -111,15 +126,15 @@ export const site = {
     location: "南昌 · 求职中",
     email: "you@example.com",
     /** 把照片放到 client/public/images/profile.jpg 即可自动生效 */
-    photo: "/images/profile.jpg",
+    photo: asset("images/profile.jpg"),
     /** 首屏背景：换成你自己的场景图，改这一行即可（建议 1680×960 横图） */
-    cover: "/images/garden-hero.jpg",
+    cover: asset("images/garden-hero.jpg"),
     /** 开场电影门的场景图 */
-    introCover: "/images/garden-intro.jpg",
+    introCover: asset("images/garden-intro.jpg"),
     /**
      * 参考站的背景是循环短视频。这两项留空时，组件用「静帧 + 多层动画」模拟运动；
      * 把你自己的视频放进 client/public/videos/ 后填上路径，会自动切换成真视频，例如
-     * coverVideo: "/videos/hero.mp4"（建议 ≤8s、无音轨、1080p、码率 3Mbps 以下）。
+     * coverVideo: asset("videos/hero.mp4")（建议 ≤8s、无音轨、1080p、码率 3Mbps 以下）。
      */
     coverVideo: "",
     introVideo: "",
